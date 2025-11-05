@@ -1,0 +1,62 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ---- Virtual environment ----
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---- Logs & Reports ----
+*.log
+logs/
+report/
+reports/
+allure-results/
+allure-report/
+output.xml
+junit.xml
+
+# ---- Test / Coverage ----
+.coverage
+.tox/
+.nox/
+.cache/
+.pytest_cache/
+coverage.xml
+htmlcov/
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
+
+# ---- Selenium downloads ----
+*.crdownload
+geckodriver.log
+chromedriver.log
+
+# ---- Environment files ----
+.env
+*.env
+
+# ---- Build / Distribution ----
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---- Misc ----
+*.tmp
+*.bak
+*.orig
+*.old
