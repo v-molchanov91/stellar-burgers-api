@@ -1,5 +1,6 @@
 import allure
 from helpers.api_client import StellarBurgersAPI
+from data.expected_responses import OrderResponses, AuthResponses
 
 
 @allure.epic("API Тесты")
@@ -20,6 +21,8 @@ class TestOrders:
             assert data["success"] is True
             assert "order" in data
             assert "number" in data["order"]
+            assert isinstance(data["order"]["number"], int)
+            assert data["order"]["number"] > 0
 
     @allure.title("Создание заказа без авторизации")
     @allure.description("Проверка, что гость может создать заказ (API разрешает).")
@@ -35,6 +38,10 @@ class TestOrders:
             resp = StellarBurgersAPI.create_order(ingredients)
         with allure.step("Проверить успешный ответ (200)"):
             assert resp.status_code == 200
+            data = resp.json()
+            assert data["success"] is True
+            assert "order" in data
+            assert "number" in data["order"]
 
     @allure.title("Создание заказа без ингредиентов")
     @allure.description("Попытка создания заказа с пустым списком ингредиентов.")
@@ -45,10 +52,7 @@ class TestOrders:
             "Проверить ошибку (400) и сообщение 'Ingredient ids must be provided'"
         ):
             assert resp.status_code == 400
-            assert resp.json() == {
-                "success": False,
-                "message": "Ingredient ids must be provided",
-            }
+            assert resp.json() == OrderResponses.ingredient_ids_required()
 
     @allure.title("Создание заказа с неверным хешем ингредиента")
     @allure.description("Попытка создания заказа с несуществующим ID ингредиента.")
@@ -82,7 +86,4 @@ class TestOrders:
             resp = StellarBurgersAPI.get_user_orders(token=None)
         with allure.step("Проверить ошибку авторизации (401)"):
             assert resp.status_code == 401
-            assert resp.json() == {
-                "success": False,
-                "message": "You should be authorised",
-            }
+            assert resp.json() == AuthResponses.you_should_be_authorised()

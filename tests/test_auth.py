@@ -1,6 +1,7 @@
 import pytest
 import allure
 from helpers.api_client import StellarBurgersAPI
+from data.expected_responses import AuthResponses
 
 
 @allure.epic("API Тесты")
@@ -9,7 +10,7 @@ class TestAuth:
 
     @allure.title("Регистрация нового пользователя")
     @allure.description("Проверка успешной регистрации уникального пользователя.")
-    def test_register_new_user(self, unique_user_data):
+    def test_register_new_user(self, unique_user_data, created_user_cleanup):
         with allure.step("Отправить POST-запрос на /auth/register с валидными данными"):
             resp = StellarBurgersAPI.register(
                 unique_user_data["email"],
@@ -23,6 +24,9 @@ class TestAuth:
             assert data["user"]["email"] == unique_user_data["email"]
             assert "accessToken" in data
 
+            token = data["accessToken"].split(" ")[-1]
+            created_user_cleanup(token)
+
     @allure.title("Регистрация существующего пользователя")
     @allure.description("Попытка регистрации пользователя с уже занятым email.")
     def test_register_existing_user(self, registered_user):
@@ -34,7 +38,7 @@ class TestAuth:
             )
         with allure.step("Проверить ответ с кодом 403 и сообщением об ошибке"):
             assert resp.status_code == 403
-            assert resp.json() == {"success": False, "message": "User already exists"}
+            assert resp.json() == AuthResponses.user_already_exists()
 
     @allure.title("Регистрация пользователя с пропущеными полями.")
     @allure.description("Проверка ошибки при отсутствии пароля.")
@@ -71,7 +75,4 @@ class TestAuth:
             "Проверить ошибку (401) и сообщение 'email or password are incorrect'"
         ):
             assert resp.status_code == 401
-            assert resp.json() == {
-                "success": False,
-                "message": "email or password are incorrect",
-            }
+            assert resp.json() == AuthResponses.email_or_password_incorrect()

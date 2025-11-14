@@ -2,6 +2,7 @@ import pytest
 import allure
 from helpers.api_client import StellarBurgersAPI
 from config.scenarios import UserUpdateScenarios
+from data.expected_responses import AuthResponses
 
 
 @allure.epic("API Тесты")
@@ -44,5 +45,5 @@ class TestUser:
             resp = StellarBurgersAPI.update_user(payload, token=None)
         with allure.step("Проверить ошибку авторизации (401)"):
             assert resp.status_code == 401
-            assert resp.json()["success"] is False
-            assert resp.json()["message"] == "You should be authorised"
+            data = resp.json()
+            assert data == AuthResponses.you_should_be_authorised()

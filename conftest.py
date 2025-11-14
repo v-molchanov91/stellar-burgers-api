@@ -30,10 +30,20 @@ def registered_user(unique_user_data):
     user["access_token"] = token
     yield user
 
-    try:
+    StellarBurgersAPI.delete_user(token)
+
+
+@pytest.fixture
+def created_user_cleanup():
+    tokens_to_cleanup = []
+
+    def add_token(token):
+        tokens_to_cleanup.append(token)
+
+    yield add_token
+
+    for token in tokens_to_cleanup:
         StellarBurgersAPI.delete_user(token)
-    except Exception:
-        pass
 
 
 @pytest.fixture(scope="session")
